@@ -1,40 +1,169 @@
-# VICSTA Hackathon – Grand Finale
-**VIT College, Kondhwa Campus | 5th – 6th March**
+# 💰 MicroSave Student — CoinStash
+
+**VICSTA Hackathon – Grand Finale | VIT College, Kondhwa Campus | 5th – 6th March**
 
 ---
 
 ## Team Details
 
-- **Team Name:** Shadow Ledgers
-- **Members:** 3
-- **Domain:** Fintech and Money Management
+| **Team Name** | Shadow Ledgers |
+| **Members** | 3 |
+| **Domain** | Fintech & Money Management |
 
 ---
 
-## Project
+## The Problem
 
-**Problem:** 
-
-**Solution:** 
+Students spend impulsively on small purchases — coffee, fast food, streaming — without realising how much those micro-transactions add up. Traditional savings tools require discipline and large deposits, creating a barrier for students with irregular incomes and no financial literacy.
 
 ---
 
-## Rules to Remember
+## Our Solution
 
-- All development must happen **during** the hackathon only
-- Push code **regularly** — commit history is monitored
-- Use only open-source libraries with compatible licenses and **credit them**
-- Only **one submission** per team
-- All members must be present **both days**
+**CoinStash** is a fintech tool that automatically rounds up every digital transaction and invests the spare change into a low-risk, blockchain-secured educational fund.
+
+> *Spend ₹47 on chai? We round it up to ₹50 and save ₹3 — silently, automatically, and with a multiplier if you spent on fast food.*
+
+### Key Features
+
+- **Smart Round-Up Engine** — category-based multipliers (Fast Food 2×, Entertainment 2×, Education 0.5×) applied automatically on every transaction
+- **Trust Score System** — a 0–1000 decentralised credibility score based on savings frequency, volume, streaks, and lesson completion. Powers micro-loan and grant eligibility
+- **Blockchain Vault** — funds locked in a Solidity smart contract (Hardhat/local testnet) with penalty-free withdrawal for verified educational expenses
+- **AI Nudge Agent** — OpenAI-powered agent that sends behavioural nudges based on spending patterns
+- **MicroLearn Streak System** — financial literacy lessons unlocked by Trust Score milestones, each worth +20 points
+- **Live Dashboard** — real-time savings tracker, transaction ledger, category breakdown, savings growth chart, and vault progress
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React, Tailwind CSS, Recharts |
+| Backend | Node.js, Express, PostgreSQL, Sequelize |
+| Blockchain | Solidity, Hardhat, Ethers.js |
+| AI | OpenAI API |
+| Auth | Custom JWT-ready auth with localStorage |
+
+---
+
+## Project Structure
+
+```
+Hackarena/
+├── frontend/          # React app — dashboard, login, register, simulate
+│   └── src/
+│       ├── components/   # Login.jsx, Register.jsx, all page components
+│       └── services/     # api.js — all backend fetch calls
+├── backend/           # Node/Express REST API
+│   └── src/
+│       ├── controllers/  # userController, transactionController
+│       ├── models/       # User, Transaction (Sequelize + PostgreSQL)
+│       ├── routes/       # userRoutes, transactionRoutes
+│       └── services/     # RoundUpService, TrustScoreService, BlockchainService
+└── smart-contracts/   # Solidity vault contract (Hardhat)
+    └── contracts/        # EducationalVault.sol
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js v18+
+- PostgreSQL
+- MetaMask (optional, for on-chain interaction)
+
+### 1. Clone the repo
+```bash
+git clone https://github.com/your-username/microsave-student.git
+cd microsave-student
+```
+
+### 2. Backend setup
+```bash
+cd backend
+npm install
+```
+
+Create a `.env` file:
+```
+PORT=5000
+DB_NAME=microsave
+DB_USER=postgres
+DB_PASSWORD=yourpassword
+DB_HOST=localhost
+DB_PORT=5432
+```
+
+Sync the database and start:
+```bash
+node src/config/syncDb.js
+npm start
+```
+
+### 3. Smart contract (local testnet)
+```bash
+cd smart-contracts
+npm install
+npx hardhat node          # Terminal 1 — keep running
+npx hardhat run scripts/deploy.js --network localhost
+```
+
+### 4. Frontend setup
+```bash
+cd frontend
+npm install
+npm start
+```
+
+App runs at `http://localhost:3000`
+
+---
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/users` | Register new user |
+| `POST` | `/api/users/login` | Login |
+| `GET` | `/api/users/:id` | Get user profile |
+| `GET` | `/api/users/:id/trust-score` | Get trust score + breakdown |
+| `POST` | `/api/transactions/simulate` | Simulate a round-up transaction |
+| `GET` | `/api/transactions/:userId` | Get all transactions for user |
+| `POST` | `/api/transactions/roundup/calculate` | Preview round-up (no DB write) |
+| `GET` | `/api/transactions/roundup/multipliers` | Get category multiplier config |
 
 ---
 
 ## Attribution
 
-List any external libraries, APIs, or datasets used here.
+| Library / API | Purpose | License |
+|---|---|---|
+| [React](https://react.dev/) | Frontend UI framework | MIT |
+| [Tailwind CSS](https://tailwindcss.com/) | Utility-first styling | MIT |
+| [Recharts](https://recharts.org/) | Chart components | MIT |
+| [Express](https://expressjs.com/) | Backend web framework | MIT |
+| [Sequelize](https://sequelize.org/) | PostgreSQL ORM | MIT |
+| [Hardhat](https://hardhat.org/) | Ethereum development environment | MIT |
+| [Ethers.js](https://ethers.org/) | Blockchain interaction | MIT |
+| [OpenAI API](https://openai.com/api/) | AI nudge agent | Commercial |
+| [dotenv](https://github.com/motdotla/dotenv) | Environment variable management | BSD-2 |
 
 ---
 
+## Hackathon Rules Compliance
+
+- ✅ All development done **during** the hackathon (5th–6th March)
+- ✅ Code pushed **regularly** with tracked commit history
+- ✅ Only open-source libraries with compatible licenses used and credited above
+- ✅ Single submission per team
+- ✅ All 3 members present both days
+
+---
+
+## Team — Shadow Ledgers
+
 > *"The world is not enough — but it is such a perfect place to start."* — James Bond
 >
-> All the best to every team. Build something great. 🚀
+> Spare change today. Education tomorrow. 🚀
