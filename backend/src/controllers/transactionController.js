@@ -1,12 +1,15 @@
 const { Transaction, User } = require('../models');
 const TransactionService = require('../services/TransactionService');
+const RoundUpService = require('../services/RoundUpService');
 
 const transactionController = {
   /**
    * POST /api/transactions/simulate
-   * Issue #1: Mock Transaction Generator
-   * Generates a dummy purchase and saves raw transaction data.
-   * No rounding applied — that will be Issue #2.
+   * Issue #1 + Issue #2 integrated:
+   *   1. Generate a mock purchase (TransactionService)
+   *   2. Categorize & apply dynamic rounding (RoundUpService)
+   *   3. Store full transaction with roundedAmount, savedAmount, multiplier
+   *   4. Update user's totalSaved
    */
   async simulateTransaction(req, res) {
     try {
@@ -16,17 +19,41 @@ const transactionController = {
       const user = await User.findByPk(userId);
       if (!user) return res.status(404).json({ success: false, error: 'User not found' });
 
-      // Issue #1: Generate raw mock transaction (merchant + amount + category)
+      // Issue #1: Generate raw mock purchase (merchant + amount + category)
       const mockPurchase = TransactionService.generateMockTransaction(userId);
 
-      // Save raw transaction to database (no rounding yet)
-      const transaction = await Transaction.create(mockPurchase);
+      // Issue #2: Pass through RoundUpService for dynamic rounding
+      const roundUp = RoundUpService.calculateRoundUp(
+        mockPurchase.originalAmount,
+        mockPurchase.category
+      );
+
+      // Merge: raw purchase + rounding result
+      const txData = {
+        ...mockPurchase,
+        roundedAmount: roundUp.roundedAmount,
+        savedAmount: roundUp.savedAmount,
+        roundUpMultiplier: roundUp.multiplier,
+      };
+
+      // Save complete transaction to database
+      const transaction = await Transaction.create(txData);
+
+      // Update user's total saved
+      await user.increment('totalSaved', { by: roundUp.savedAmount });
 
       res.status(201).json({
         success: true,
         data: {
           transaction,
-          message: `Purchase: "${mockPurchase.merchantName}" - $${mockPurchase.originalAmount}`,
+          roundUpDetails: {
+            baseAmount: mockPurchase.originalAmount,
+            category: mockPurchase.category,
+            multiplier: roundUp.multiplier,
+            savedAmount: roundUp.savedAmount,
+            roundedAmount: roundUp.roundedAmount,
+          },
+          message: `${mockPurchase.merchantName} - $${mockPurchase.originalAmount} → saved $${roundUp.savedAmount} (${roundUp.multiplier}x ${mockPurchase.category})`,
         },
       });
     } catch (error) {
@@ -34,7 +61,7 @@ const transactionController = {
     }
   },
 
-  // GET /api/transactions/:userId - Get all transactions for a user
+  // GET /api/transactions/:userId — Get all transactions for a user
   async getUserTransactions(req, res) {
     try {
       const transactions = await Transaction.findAll({
@@ -42,6 +69,46 @@ const transactionController = {
         order: [['createdAt', 'DESC']],
       });
       res.json({ success: true, data: transactions });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  },
+
+  /**
+   * POST /api/roundup/calculate  (Sub-Issue #2.5)
+   * Standalone round-up preview — no transaction created.
+   * Frontend can call this to show "what would happen" before confirming.
+   */
+  async calculateRoundUp(req, res) {
+    try {
+      const { amount, category, merchantName } = req.body;
+
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ success: false, error: 'amount must be a positive number' });
+      }
+
+      let result;
+      if (merchantName && !category) {
+        // Auto-categorize from merchant name
+        result = RoundUpService.processTransaction(amount, merchantName);
+      } else {
+        result = RoundUpService.calculateRoundUp(amount, category || 'other');
+      }
+
+      res.json({ success: true, data: result });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  },
+
+  /**
+   * GET /api/roundup/multipliers  (Sub-Issue #2.6)
+   * Returns the full category multiplier config for frontend display.
+   */
+  async getMultipliers(req, res) {
+    try {
+      const config = RoundUpService.getMultiplierConfig();
+      res.json({ success: true, data: config });
     } catch (error) {
       res.status(500).json({ success: false, error: error.message });
     }

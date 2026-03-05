@@ -36,6 +36,11 @@ const Transaction = sequelize.define('Transaction', {
     ),
     defaultValue: 'other',
   },
+  roundUpMultiplier: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+    comment: 'The behavioral multiplier applied (e.g., 2x for food, 3x for entertainment)',
+  },
 }, {
   tableName: 'transactions',
   timestamps: true,
