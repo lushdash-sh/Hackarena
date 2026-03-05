@@ -33,6 +33,10 @@ const User = sequelize.define('User', {
     type: DataTypes.DECIMAL(12, 2),
     defaultValue: 0.00,
   },
+  lastScoreUpdate: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
 }, {
   tableName: 'users',
   timestamps: true,

@@ -11,4 +11,7 @@ router.get('/', userController.getAllUsers);
 // GET /api/users/:id - Get user by ID
 router.get('/:id', userController.getUserById);
 
+// GET /api/users/:id/trust-score - Get trust score with breakdown (Issue #3)
+router.get('/:id/trust-score', userController.getTrustScore);
+
 module.exports = router;

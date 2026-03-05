@@ -1,6 +1,7 @@
 const { Transaction, User } = require('../models');
 const TransactionService = require('../services/TransactionService');
 const RoundUpService = require('../services/RoundUpService');
+const TrustScoreService = require('../services/TrustScoreService');
 
 const transactionController = {
   /**
@@ -42,6 +43,20 @@ const transactionController = {
       // Update user's total saved
       await user.increment('totalSaved', { by: roundUp.savedAmount });
 
+      // Issue #3: Update streak and recalculate trust score
+      await TrustScoreService.updateStreak(userId);
+
+      const allTransactions = await Transaction.findAll({
+        where: { userId },
+        order: [['createdAt', 'DESC']],
+      });
+      const updatedUser = await User.findByPk(userId);
+      const trustResult = TrustScoreService.calculate(allTransactions, updatedUser);
+      await updatedUser.update({
+        trustScore: trustResult.score,
+        lastScoreUpdate: new Date(),
+      });
+
       res.status(201).json({
         success: true,
         data: {
@@ -53,6 +68,8 @@ const transactionController = {
             savedAmount: roundUp.savedAmount,
             roundedAmount: roundUp.roundedAmount,
           },
+          trustScore: trustResult.score,
+          scoreBreakdown: trustResult.breakdown,
           message: `${mockPurchase.merchantName} - $${mockPurchase.originalAmount} → saved $${roundUp.savedAmount} (${roundUp.multiplier}x ${mockPurchase.category})`,
         },
       });
