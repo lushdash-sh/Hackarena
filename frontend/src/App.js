@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Login from './components/Login';
 
 /* ═══════════════════════════════════════════════
    INJECT GLOBAL STYLES
@@ -110,7 +111,6 @@ const fmt = n => Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maxim
    REUSABLE PIECES
 ═══════════════════════════════════════════════ */
 
-// Stat Card
 function Card({ label, value, sub, badge, icon, accent, delay=0 }) {
   return (
     <div className="fu" style={{ flex:1, background:'#0d1520', border:'1px solid #111b27', borderRadius:14, padding:'20px 22px', animationDelay:`${delay}s` }}>
@@ -127,7 +127,6 @@ function Card({ label, value, sub, badge, icon, accent, delay=0 }) {
   );
 }
 
-// Section box
 function Box({ children, delay=0, style={} }) {
   return (
     <div className="fu" style={{ background:'#0d1520', border:'1px solid #111b27', borderRadius:14, padding:24, animationDelay:`${delay}s`, ...style }}>
@@ -136,12 +135,10 @@ function Box({ children, delay=0, style={} }) {
   );
 }
 
-// Box label
 function BoxLabel({ children }) {
   return <div style={{ color:'#334155', fontSize:10.5, fontWeight:600, letterSpacing:1.2, textTransform:'uppercase', marginBottom:14 }}>{children}</div>;
 }
 
-// Savings bar chart
 function BarChart({ data }) {
   const max = Math.max(...data.map(d=>d.value));
   return (
@@ -159,7 +156,6 @@ function BarChart({ data }) {
   );
 }
 
-// Trust gauge SVG
 function TrustGauge({ score }) {
   const r=56, cx=72, cy=72;
   const circ=Math.PI*r;
@@ -186,7 +182,6 @@ function TrustGauge({ score }) {
   );
 }
 
-// Category badge
 function CatBadge({ cat }) {
   const col = CAT_COLOR[cat] || '#94a3b8';
   return (
@@ -194,7 +189,6 @@ function CatBadge({ cat }) {
   );
 }
 
-// Toast
 function Toast({ msg, onClose }) {
   useEffect(() => { const t=setTimeout(onClose,3000); return ()=>clearTimeout(t); },[]);
   return (
@@ -217,7 +211,7 @@ const NAV = [
   { id:'simulate',     label:'Simulate',     icon:'⚡' },
 ];
 
-function Sidebar({ page, setPage, streak }) {
+function Sidebar({ page, setPage, streak, userName, onLogout }) {
   return (
     <aside style={{ width:222, minHeight:'100vh', background:'#080c12', borderRight:'1px solid #0f1923', display:'flex', flexDirection:'column', position:'fixed', top:0, left:0, zIndex:200 }}>
       {/* Logo */}
@@ -249,22 +243,37 @@ function Sidebar({ page, setPage, streak }) {
           </button>
         ))}
       </nav>
-      {/* User */}
+      {/* User + Logout */}
       <div style={{ padding:'16px 20px', borderTop:'1px solid #0f1923' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <div style={{ width:34, height:34, borderRadius:'50%', background:'linear-gradient(135deg,#22c55e,#0ea5e9)', display:'flex', alignItems:'center', justifyContent:'center', color:'#000', fontWeight:700, fontSize:13 }}>A</div>
+        <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:10 }}>
+          <div style={{ width:34, height:34, borderRadius:'50%', background:'linear-gradient(135deg,#22c55e,#0ea5e9)', display:'flex', alignItems:'center', justifyContent:'center', color:'#000', fontWeight:700, fontSize:13 }}>
+            {userName ? userName.charAt(0).toUpperCase() : 'A'}
+          </div>
           <div>
-            <div style={{ color:'#e2e8f0', fontSize:13, fontWeight:600 }}>Alex Chen</div>
-            <div style={{ color:'#334155', fontSize:11 }}>Student · 0x4e2...f91a</div>
+            <div style={{ color:'#e2e8f0', fontSize:13, fontWeight:600 }}>{userName || 'Alex Chen'}</div>
+            <div style={{ color:'#334155', fontSize:11 }}>Student</div>
           </div>
         </div>
+        {/* Logout button */}
+        <button
+          onClick={onLogout}
+          style={{
+            width:'100%', background:'transparent', border:'1px solid #1e2a38',
+            borderRadius:8, padding:'8px', color:'#4b5563', fontSize:12,
+            cursor:'pointer', transition:'all 0.15s', fontFamily:"'DM Sans',sans-serif",
+          }}
+          onMouseEnter={e => { e.target.style.borderColor='#f87171'; e.target.style.color='#f87171'; }}
+          onMouseLeave={e => { e.target.style.borderColor='#1e2a38'; e.target.style.color='#4b5563'; }}
+        >
+          ⎋ Sign Out
+        </button>
       </div>
     </aside>
   );
 }
 
 /* ═══════════════════════════════════════════════
-   PAGE: DASHBOARD  (Issue #6)
+   PAGE: DASHBOARD
 ═══════════════════════════════════════════════ */
 function Dashboard({ d, onSim }) {
   const h = new Date().getHours();
@@ -273,7 +282,6 @@ function Dashboard({ d, onSim }) {
 
   return (
     <div>
-      {/* Header */}
       <div className="fu" style={{ marginBottom:28 }}>
         <h1 style={{ color:'#f1f5f9', fontSize:26, fontWeight:700, letterSpacing:'-0.5px' }}>
           {greet}, <span style={{ color:'#22c55e' }}>{d.name}</span> 👋
@@ -283,7 +291,6 @@ function Dashboard({ d, onSim }) {
         </p>
       </div>
 
-      {/* Top Cards */}
       <div style={{ display:'flex', gap:14, marginBottom:20 }}>
         <Card delay={0.04} label="Total Saved"      value={`$${fmt(d.totalSaved)}`}       badge="↑ 23% vs last month" icon="🐷" />
         <Card delay={0.08} label="Round-Ups Today"  value={`$${fmt(d.roundUpsToday)}`}    sub={`${d.todayCount} transactions`} badge="↑ 12% vs last month" icon="⇅" />
@@ -292,7 +299,6 @@ function Dashboard({ d, onSim }) {
           sub={`$${d.currentSavings.toLocaleString()} / $${d.savingsGoal.toLocaleString()}`} badge="↑ 8% vs last month" icon="🎯" />
       </div>
 
-      {/* Chart + Trust Score */}
       <div style={{ display:'grid', gridTemplateColumns:'1fr 290px', gap:14, marginBottom:20 }}>
         <Box delay={0.20}>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:18 }}>
@@ -313,7 +319,6 @@ function Dashboard({ d, onSim }) {
         </Box>
       </div>
 
-      {/* Recent Round-Ups + Smart Vault */}
       <div style={{ display:'grid', gridTemplateColumns:'1fr 290px', gap:14 }}>
         <Box delay={0.28}>
           <BoxLabel>Recent Round-Ups</BoxLabel>
@@ -378,7 +383,7 @@ function Dashboard({ d, onSim }) {
 }
 
 /* ═══════════════════════════════════════════════
-   PAGE: TRANSACTIONS  (Issue #7)
+   PAGE: TRANSACTIONS
 ═══════════════════════════════════════════════ */
 function Transactions({ d }) {
   const [filter, setFilter] = useState('All');
@@ -402,7 +407,6 @@ function Transactions({ d }) {
         <p style={{ color:'#475569', fontSize:13.5, marginTop:5 }}>Track your round-ups and savings — category multipliers applied automatically</p>
       </div>
 
-      {/* Summary Cards */}
       <div style={{ display:'flex', gap:14, marginBottom:20 }}>
         <Card delay={0.04} label="Total Round-Ups" value={d.allTxns.length} icon="⇅"/>
         <Card delay={0.08} label="Total Saved"     value={`$${fmt(totalSaved)}`} accent="#22c55e" icon="💰"/>
@@ -410,7 +414,6 @@ function Transactions({ d }) {
         <Card delay={0.16} label="Top Category"   value={d.catBreakdown[0].cat} sub={`$${fmt(d.catBreakdown[0].saved)} saved`} icon="🏆"/>
       </div>
 
-      {/* Category Breakdown */}
       <Box delay={0.20} style={{ marginBottom:14 }}>
         <BoxLabel>Savings by Category</BoxLabel>
         <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10 }}>
@@ -429,7 +432,6 @@ function Transactions({ d }) {
         </div>
       </Box>
 
-      {/* Filters */}
       <Box delay={0.24} style={{ marginBottom:14 }}>
         <div style={{ display:'flex', justifyContent:'space-between', marginBottom:13 }}>
           <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="🔍  Search merchants..."
@@ -445,7 +447,6 @@ function Transactions({ d }) {
         </div>
       </Box>
 
-      {/* Ledger Table */}
       <Box delay={0.28} style={{ padding:0, overflow:'hidden' }}>
         <div style={{ display:'grid', gridTemplateColumns:'1fr 105px 115px 110px 85px', padding:'12px 20px', borderBottom:'1px solid #111b27', background:'#080c12' }}>
           {['MERCHANT','ORIGINAL','ROUNDED TO','SAVED','STATUS'].map(h=>(
@@ -806,13 +807,36 @@ function Simulate({ d, onSim }) {
    ROOT APP
 ═══════════════════════════════════════════════ */
 export default function App() {
-  const [mounted, setMounted] = useState(false);
-  const [page, setPage]       = useState('dashboard');
-  const [data, setData]       = useState(INIT);
-  const [toast, setToast]     = useState(null);
+  const [mounted, setMounted]   = useState(false);
+  const [page, setPage]         = useState('dashboard');
+  const [data, setData]         = useState(INIT);
+  const [toast, setToast]       = useState(null);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [userName, setUserName] = useState('');
 
   useEffect(() => { setMounted(true); }, []);
   if (!mounted) return null;
+
+  // ── Show Login if not authenticated ──────────────
+  if (!loggedIn) {
+    return (
+      <>
+        <InjectStyles />
+        <Login onLogin={(user) => {
+          setUserName(user.name || 'Alex Chen');
+          setData(prev => ({ ...prev, name: user.name || prev.name }));
+          setLoggedIn(true);
+        }} />
+      </>
+    );
+  }
+
+  // ── Logout handler ────────────────────────────────
+  const handleLogout = () => {
+    setLoggedIn(false);
+    setUserName('');
+    setPage('dashboard');
+  };
 
   const handleSim = (tx) => {
     if (!tx) {
@@ -837,19 +861,25 @@ export default function App() {
   };
 
   const pages = {
-    dashboard:    <Dashboard   d={data} onSim={()=>handleSim(null)}/>,
+    dashboard:    <Dashboard    d={data} onSim={()=>handleSim(null)}/>,
     transactions: <Transactions d={data}/>,
-    trustscore:   <TrustScore  d={data}/>,
-    vault:        <SmartVault  d={data}/>,
-    learn:        <MicroLearn  d={data}/>,
-    simulate:     <Simulate    d={data} onSim={handleSim}/>,
+    trustscore:   <TrustScore   d={data}/>,
+    vault:        <SmartVault   d={data}/>,
+    learn:        <MicroLearn   d={data}/>,
+    simulate:     <Simulate     d={data} onSim={handleSim}/>,
   };
 
   return (
     <>
       <InjectStyles/>
       <div style={{ display:'flex', minHeight:'100vh', background:'#070b11' }}>
-        <Sidebar page={page} setPage={setPage} streak={data.streak}/>
+        <Sidebar
+          page={page}
+          setPage={setPage}
+          streak={data.streak}
+          userName={userName}
+          onLogout={handleLogout}
+        />
         {toast && <Toast msg={toast} onClose={()=>setToast(null)}/>}
         <main style={{ marginLeft:222, flex:1, padding:'36px 42px', overflowY:'auto', minHeight:'100vh' }}>
           {pages[page]}
