@@ -6,9 +6,9 @@
 
 ## Team Details
 
-| **Team Name** | Shadow Ledgers |
-| **Members** | 3 |
-| **Domain** | Fintech & Money Management |
+**Team Name: Shadow Ledgers**  
+**Members: 3**  
+**Domain: Fintech & Money Management**
 
 ---
 
@@ -29,7 +29,6 @@ Students spend impulsively on small purchases — coffee, fast food, streaming �
 - **Smart Round-Up Engine** — category-based multipliers (Fast Food 2×, Entertainment 2×, Education 0.5×) applied automatically on every transaction
 - **Trust Score System** — a 0–1000 decentralised credibility score based on savings frequency, volume, streaks, and lesson completion. Powers micro-loan and grant eligibility
 - **Blockchain Vault** — funds locked in a Solidity smart contract (Hardhat/local testnet) with penalty-free withdrawal for verified educational expenses
-- **AI Nudge Agent** — OpenAI-powered agent that sends behavioural nudges based on spending patterns
 - **MicroLearn Streak System** — financial literacy lessons unlocked by Trust Score milestones, each worth +20 points
 - **Live Dashboard** — real-time savings tracker, transaction ledger, category breakdown, savings growth chart, and vault progress
 
@@ -40,10 +39,10 @@ Students spend impulsively on small purchases — coffee, fast food, streaming �
 | Layer | Technology |
 |---|---|
 | Frontend | React, Tailwind CSS, Recharts |
-| Backend | Node.js, Express, PostgreSQL, Sequelize |
+| Backend | Node.js, Express.js |
 | Blockchain | Solidity, Hardhat, Ethers.js |
-| AI | OpenAI API |
-| Auth | Custom JWT-ready auth with localStorage |
+| Database | PostgreSQL, Sequelize |
+
 
 ---
 
@@ -120,6 +119,13 @@ npm start
 App runs at `http://localhost:3000`
 
 ---
+Snippets from the site:
+
+<img width="1919" height="978" alt="Screenshot 2026-03-06 021036" src="https://github.com/user-attachments/assets/26690620-aae0-4743-90bd-1d8f69f0818a" />  
+
+<img width="1910" height="960" alt="Screenshot 2026-03-06 021054" src="https://github.com/user-attachments/assets/7d682ba6-725e-4a5d-b3f7-df6193da9f6f" />  
+
+<img width="1900" height="950" alt="Screenshot 2026-03-06 021110" src="https://github.com/user-attachments/assets/41aee11f-866f-4104-a65a-5384274f6473" />
 
 ## API Endpoints
 
@@ -147,23 +153,15 @@ App runs at `http://localhost:3000`
 | [Sequelize](https://sequelize.org/) | PostgreSQL ORM | MIT |
 | [Hardhat](https://hardhat.org/) | Ethereum development environment | MIT |
 | [Ethers.js](https://ethers.org/) | Blockchain interaction | MIT |
-| [OpenAI API](https://openai.com/api/) | AI nudge agent | Commercial |
 | [dotenv](https://github.com/motdotla/dotenv) | Environment variable management | BSD-2 |
 
 ---
 
-## Hackathon Rules Compliance
-
-- ✅ All development done **during** the hackathon (5th–6th March)
-- ✅ Code pushed **regularly** with tracked commit history
-- ✅ Only open-source libraries with compatible licenses used and credited above
-- ✅ Single submission per team
-- ✅ All 3 members present both days
-
----
 
 ## Team — Shadow Ledgers
 
-> *"The world is not enough — but it is such a perfect place to start."* — James Bond
+-Prerna Bora (leader)  
+-Shruti Bhosale (member)  
+-Ananya Palnitkar (member)
 >
-> Spare change today. Education tomorrow. 🚀
+> Thank You!!
